@@ -1,17 +1,17 @@
 # Drug Blood-Brain Barrier Penetration (BBBP) Prediction
-**A Graph Neural Network (GNN) approach to predict pharmacokinetic properties of small molecules.**
+**A Graph Neural Network (GNN) approach to predict blood brain barrier permeability of small molecules.**
 
 ## 🚀 The Challenge
-Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is a multi-million dollar question in neuro-drug discovery. This project implements an end-to-end graph featurization and classification pipeline using Graph Isomorphism Network with Edge features (GINE) network to automate this prediction using the MoleculeNet BBBP dataset.
+Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is an important aspect of drug testing to ensure patient safety. This project implements an end-to-end graph featurization and classification pipeline using Graph Isomorphism Network with Edge features (GINE) network to automate this prediction.
 
 ## 🛠️ Technical Stack
 * **Architecture**: GINE (Graph Isomorphism Network with Edge Features). I chose this specifically because standard GINs ignore bond attributes, which are crucial for chemical identity.
 
 * **Data Strategy**: Combined SMILES/labels from BBBP and B3DB datasets.
 
-* **Splitting**: Used Bemis-Murcko Scaffold Splitting. This is much harder than a random split; the model is tested on chemical families it has never seen during training.
+* **Splitting**: Used Murcko Scaffold Splitting. The model should be able to generalize to new scaffolds that it has not seen during training.
 
-* **Featurization**: custom RDKit pipeline for node (atoms) and edge (bonds) features
+* **Featurization**: custom RDKit pipeline for building node (atoms) and edge (bonds) features from SMILES strings
 
 ## Quick Start 
 1. Clone the github repository 
@@ -55,6 +55,6 @@ weighted avg       0.83      0.82      0.83      1931
 ![Loss validation plot](./trained_model/training_plot.png)
 
 ## 📁 Highlights
-* `model/`: Modular GNN layers.
-* `pipeline/`: Robust training and evaluation logic.
-* `molecule_visualizer.py`: Function to visualize a graph as a networkx plot. 
+* `model/`: The GNN model.
+* `pipeline/`: Graph featurization and model training modules.
+* `molecule_visualizer.py`: Function to visualize a molecule graph as a networkx plot. 
