@@ -111,7 +111,7 @@ class TrainClassifier():
       
       true_value = batch.y.float().unsqueeze(dim = 1)
 
-      prediction = torch.where(prediction > 0.2, 1, 0) 
+      prediction = torch.where(prediction > 0.5, 1, 0) 
 
       predictions.append(prediction)
       true_values.append(true_value) 
