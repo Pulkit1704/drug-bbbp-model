@@ -2,7 +2,7 @@
 **A Graph Neural Network (GNN) approach to predict pharmacokinetic properties of small molecules.**
 
 ## 🚀 The Challenge
-Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is a multi-million dollar question in neuro-drug discovery. This project implements an end-to-end graph generation and classification pipeline using Graph Isomorphism Network with Edge features (GINE) network to automate this prediction using the MoleculeNet BBBP dataset.
+Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is a multi-million dollar question in neuro-drug discovery. This project implements an end-to-end graph featurization and classification pipeline using Graph Isomorphism Network with Edge features (GINE) network to automate this prediction using the MoleculeNet BBBP dataset.
 
 ## 🛠️ Technical Stack
 * **Architecture**: GINE (Graph Isomorphism Network with Edge Features). I chose this specifically because standard GINs ignore bond attributes, which are crucial for chemical identity.
@@ -13,6 +13,29 @@ Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is a multi
 
 * **Featurization**: custom RDKit pipeline for node (atoms) and edge (bonds) features
 
+## Quick Start 
+1. Clone the github repository 
+
+
+```
+git clone https://github.com/Pulkit1704/drug-blood-brain-barrier-prediction-model.git
+cd drug-blood-brain-barrier-prediction-model
+
+```
+
+2. Create the conda environment 
+
+
+```
+conda env create -f environment.yml
+```
+
+3. Run main.py to load data and train the model 
+
+
+``` 
+python main.py 
+```
 
 ## 📊 Performance
 * **F1-score (macro average):** 0.82
@@ -29,7 +52,7 @@ Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is a multi
 weighted avg       0.84      0.84      0.84      1931
 ```
 ## **Loss plot** 
-![Loss vlaidation plot](./trained_model/training_plot.png)
+![Loss validation plot](./trained_model/training_plot.png)
 
 ## 📁 Highlights
 * `model/`: Modular GNN layers.
