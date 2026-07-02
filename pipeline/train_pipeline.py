@@ -1,140 +1,125 @@
 from model.gnn_model import GraphClassifier
-import logging 
-import torch.nn as nn 
-from torch.optim import Adam 
-import torch 
+import logging
+import torch.nn as nn
+from torch.optim import Adam
+import torch
 from sklearn.metrics import f1_score, classification_report
-import os 
 
 
-class TrainClassifier(): 
+class TrainClassifier:
 
-  def __init__(self, 
-               train_loader, 
-               validation_loader, 
-               model_hidden_dim = 13, 
-               learning_rate = 0.0001,
-               pos_weight = 0.5):
+    def __init__(
+        self,
+        train_loader,
+        validation_loader,
+        model_hidden_dim=13,
+        learning_rate=0.0001,
+        pos_weight=0.5, 
+        model_dropout= 0.3):
 
-    self.train_loader = train_loader 
-    self.validation_loader = validation_loader 
+        self.train_loader = train_loader
+        self.validation_loader = validation_loader
 
-    self.loss_func = nn.BCEWithLogitsLoss(pos_weight = torch.tensor([pos_weight])) 
+        self.loss_func = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([pos_weight]))
 
-    node_attributes_shape = next(iter(train_loader)).x.shape[-1] 
+        node_attributes_shape = next(iter(train_loader)).x.shape[-1]
 
-    edge_attributes_shape = next(iter(train_loader)).edge_attr.shape[-1] 
+        edge_attributes_shape = next(iter(train_loader)).edge_attr.shape[-1]
 
-    self.model = GraphClassifier(
-      node_attributes_shape=node_attributes_shape,
-      edge_attributes_shape=edge_attributes_shape,
-      hidden_dim= model_hidden_dim, 
-      dropout_rate= 0.1
-    )
+        self.classifier = GraphClassifier(
+            node_attributes_shape=node_attributes_shape,
+            edge_attributes_shape=edge_attributes_shape,
+            hidden_dim=model_hidden_dim,
+            dropout_rate=model_dropout,
+        )
 
-    self.optimizer = Adam(self.model.parameters(), learning_rate) 
+        self.optimizer = Adam(self.classifier.parameters(), learning_rate)
 
-  def train_model(self, epochs = 30): 
+    def train_model(self, epochs=30):
 
-    self.model.train() 
+        # put the model in train mode
+        self.classifier.train()
 
-    train_loss_values = [] 
-    validation_loss_values = [] 
-    for i in range(epochs):   
-      
-      total_loss = 0
-      for batch in self.train_loader: 
+        train_loss_values = []
+        validation_loss_values = []
+        for i in range(epochs):
 
-        self.optimizer.zero_grad() 
+            total_loss = 0
+            for batch in self.train_loader:
 
-        predictions = self.model(batch.x, 
-                                 batch.edge_index, 
-                                 batch.edge_attr, 
-                                 batch.batch) 
+                self.optimizer.zero_grad()
 
-        loss = self.loss_func(predictions, batch.y.float().unsqueeze(dim = 1)) 
-        loss.backward() 
+                predictions = self.classifier(
+                    batch.x, batch.edge_index, batch.edge_attr, batch.batch
+                )
 
-        total_loss += loss.item() 
+                loss = self.loss_func(predictions, batch.y.float().unsqueeze(dim=1))
+                loss.backward()
 
-        self.optimizer.step() 
+                total_loss += loss.item()
 
-      print(f"epoch {i}: total loss: {total_loss/len(self.train_loader)}")
+                self.optimizer.step()
 
-      train_loss_values.append(total_loss/len(self.train_loader)) 
+            print(f"epoch {i}: total loss: {total_loss/len(self.train_loader)}")
 
-      validation_loss_value = self.validate_model() 
+            train_loss_values.append(total_loss / len(self.train_loader))
 
-      validation_loss_values.append(validation_loss_value) 
+            validation_loss_value = self.validate_model()
 
-    return train_loss_values, validation_loss_values
+            validation_loss_values.append(validation_loss_value)
 
+        return train_loss_values, validation_loss_values
 
-  def validate_model(self): 
+    def validate_model(self):
 
-    self.model.eval() 
+        self.classifier.eval()
 
-    total_validation_loss = 0 
+        total_validation_loss = 0
 
-    with torch.no_grad(): 
+        with torch.no_grad():
 
-      for batch in self.validation_loader: 
+            for batch in self.validation_loader:
 
-        prediction = self.model(batch.x,
-                                batch.edge_index,
-                                batch.edge_attr,
-                                batch.batch) 
-      
-        loss = self.loss_func(prediction, batch.y.float().unsqueeze(dim = 1)) 
+                prediction = self.classifier(
+                    batch.x, batch.edge_index, batch.edge_attr, batch.batch
+                )
 
-        total_validation_loss += loss.item() 
+                loss = self.loss_func(prediction, batch.y.float().unsqueeze(dim=1))
 
-    
-    print(f"Validation run loss: {total_validation_loss/len(self.validation_loader)}")
+                total_validation_loss += loss.item()
 
-    return total_validation_loss / len(self.validation_loader) 
-  
+        print(
+            f"Validation run loss: {total_validation_loss/len(self.validation_loader)}"
+        )
 
-  def score_model(self): 
+        return total_validation_loss / len(self.validation_loader)
 
-    self.model.eval()
+    def score_model(self):
 
-    predictions = [] 
-    true_values = [] 
+        self.classifier.eval()
 
-    for batch in self.validation_loader: 
+        predictions = []
+        true_values = []
 
-      prediction = self.model.predict(batch.x,
-                               batch.edge_index,
-                               batch.edge_attr, 
-                               batch.batch) 
-      
-      true_value = batch.y.float().unsqueeze(dim = 1)
+        for batch in self.validation_loader:
 
-      prediction = torch.where(prediction > 0.5, 1, 0) 
+            prediction = self.classifier.predict(
+                batch.x, batch.edge_index, batch.edge_attr, batch.batch
+            )
 
-      predictions.append(prediction)
-      true_values.append(true_value) 
+            true_value = batch.y.float().unsqueeze(dim=1)
 
-    predictions = torch.concat(predictions, dim = 0).detach().numpy() 
+            # prediction = torch.where(prediction > 0.5, 1, 0)
 
-    true_values = torch.concat(true_values, dim = 0).detach().numpy() 
+            predictions.append(prediction)
+            true_values.append(true_value)
 
-    macro_f1 = f1_score(true_values, predictions, average= 'macro')
+        predictions = torch.concat(predictions, dim=0).detach().numpy()
 
-    print(f"macro f1 score: {macro_f1}") 
-    print(classification_report(true_values, predictions))
+        true_values = torch.concat(true_values, dim=0).detach().numpy()
 
-  def save_model(self, save_path):
+        macro_f1 = f1_score(true_values, predictions, average="macro")
 
-    if not os.path.exists(save_path): 
-      print("save path not found")  
-      return 
-    
-    filepath = os.path.join(save_path, "trained_model.pth")
-
-    torch.save(self.model.state_dict(), filepath) 
-
-    print(f"model saved to {filepath}")
-    return 
-  
+        print(f"macro f1 score: {macro_f1}")
+        print(classification_report(true_values, predictions))
+        return 
