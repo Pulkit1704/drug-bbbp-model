@@ -1,4 +1,4 @@
-from utils.file_loader import load_csv_files 
+from utils.io import load_csv_files 
 
 
 def get_pos_wieghts(): 
