@@ -26,10 +26,18 @@ class TrainClassifier:
 
         edge_attributes_shape = next(iter(train_loader)).edge_attr.shape[-1]
 
+        self.model_hyperparameters = {
+            "node_attributes_shape": node_attributes_shape, 
+            "edge_attributes_shape": edge_attributes_shape, 
+            "model_hidden_dim": model_hidden_dim, 
+            "model_dropout": model_dropout, 
+            "bce_position_weights": pos_weight
+        }
+
         self.classifier = GraphClassifier(
             node_attributes_shape=node_attributes_shape,
             edge_attributes_shape=edge_attributes_shape,
-            hidden_dim=model_hidden_dim,
+            hidden_dim= model_hidden_dim,
             dropout_rate=model_dropout,
         )
 
@@ -123,3 +131,6 @@ class TrainClassifier:
         print(f"macro f1 score: {macro_f1}")
         print(classification_report(true_values, predictions))
         return 
+    
+    def get_model_hyperparameters(self): 
+        return self.model_hyperparameters 
