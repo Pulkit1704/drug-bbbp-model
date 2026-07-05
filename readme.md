@@ -38,18 +38,18 @@ python main.py
 ```
 
 ## 📊 Performance
-* **F1-score (macro average):** 0.82
-* **Accuracy**: 84%
+* **F1-score (macro average):** 0.81
+* **Accuracy**: 83%
 * **Classification report**: 
 ```
               precision    recall  f1-score   support
 
-         0.0       0.73      0.83      0.78       713
-         1.0       0.89      0.82      0.86      1218
+         0.0       0.76      0.77      0.77       714
+         1.0       0.86      0.86      0.86      1223
 
-    accuracy                           0.82      1931
-   macro avg       0.81      0.83      0.82      1931
-weighted avg       0.83      0.82      0.83      1931
+    accuracy                           0.83      1937
+   macro avg       0.81      0.81      0.81      1937
+weighted avg       0.83      0.83      0.83      1937
 ```
 ## **Loss plot** 
 ![Loss validation plot](./trained_model/training_plot.png)
