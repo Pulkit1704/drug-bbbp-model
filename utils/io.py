@@ -39,7 +39,7 @@ def load_csv_files(root=Path("./data/")):
     return combined_data
 
 
-def save_model(model: GraphClassifier, save_path: Path):
+def save_model(model_checkpoint: dict, save_path: Path):
 
     if not os.path.exists(save_path):
         print("save path not found")
@@ -47,18 +47,29 @@ def save_model(model: GraphClassifier, save_path: Path):
 
     filepath = os.path.join(save_path, "trained_model.pth")
 
-    torch.save(model.state_dict(), filepath)
+    torch.save(model_checkpoint, filepath)
 
     print(f"model saved to {filepath}")
     return
 
 
-def load_model(model: GraphClassifier, load_path:Path): 
+def load_model(load_path:Path) -> GraphClassifier: 
 
     if not Path(load_path).exists(): 
         print(f"{load_path} not found") 
     
+    model_checkpoint = torch.load(load_path) 
+
+    hyper_parameters = model_checkpoint['hyperparameters']
+    model_state_dict = model_checkpoint['weights']
+
+    model = GraphClassifier(
+        node_attributes_shape= hyper_parameters['node_attributes_shape'], 
+        edge_attributes_shape= hyper_parameters['edge_attributes_shape'], 
+        hidden_dim= hyper_parameters['model_hidden_dim'], 
+        dropout_rate= hyper_parameters['model_dropout']
+    )
     
-    model.load_state_dict(torch.load(load_path)) 
+    model.load_state_dict(model_state_dict) 
 
     return model 
