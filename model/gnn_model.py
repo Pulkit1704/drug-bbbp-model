@@ -159,4 +159,4 @@ class GraphClassifier(nn.Module):
 
         probs = self.predict_probs(x, edge_index, edge_attrs, batch) 
 
-        return (probs > threshold).float()
+        return (probs > threshold).float().item()
