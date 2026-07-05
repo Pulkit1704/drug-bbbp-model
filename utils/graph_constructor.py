@@ -9,12 +9,13 @@ import datamol as dm
 import logging
 
 
-def smiles_to_graph(smiles_str, label, add_node_labels=False):
+def smiles_to_graph(smiles_str, add_node_labels=False) -> Data:
 
     mol = get_mol(smiles_str)
 
     if mol is None:
         print(f"mol form smiles returned an empty string for {smiles_str}")
+        return None
 
     node_labels = {}
 
@@ -62,12 +63,9 @@ def smiles_to_graph(smiles_str, label, add_node_labels=False):
     edge_index = torch.tensor(edge_indices, dtype=torch.long).t().contiguous()
     edge_attr = torch.tensor(edge_attrs, dtype=torch.float)
 
-    y = torch.tensor([label], dtype=torch.float)
-
     return Data(
         x=x,
         edge_index=edge_index,
-        y=y,
         node_labels=node_labels,
         edge_attr=edge_attr,
         smiles=smiles_str,
