@@ -61,9 +61,22 @@ def visualize_2d_quantitative_svg(smiles,
     highlight_atoms = []
 
     for i in range(mol.GetNumAtoms()):
-        s = norm_scores[i]
-        color = (0.6 - (float(s) * 0.2), 0.53, min(1, 0.45 + (float(s) * 0.5)))
-        
+        s = float(norm_scores[i])
+
+        if s < 0.5:
+            # First half: Interpolate from Bright Red to Slate Grey
+            local_t = s / 0.5
+            r_val = 0.8 + local_t * (0.75 - 1.0)
+            g_val = 0.2 + local_t * (0.76 - 0.0)
+            b_val = 0.2 + local_t * (0.78 - 0.0)
+        else:
+            # Second half: Interpolate from Slate Grey to Bright Blue
+            local_t = (s - 0.5) / 0.5
+            r_val = 0.75 + local_t * (0.0 - 0.75)
+            g_val = 0.76 + local_t * (0.0 - 0.76)
+            b_val = 0.78 + local_t * (1.0 - 0.78)
+            
+        color = (r_val, g_val, b_val)
         atom_colors[i] = color
         highlight_atoms.append(i)
 
