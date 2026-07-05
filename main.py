@@ -1,44 +1,119 @@
-from pipeline.graph_pipeline import get_train_test_loaders
-from pipeline.train_pipeline import TrainClassifier 
-from utils.io import save_model
-from utils.train_utils import get_pos_wieghts
-import matplotlib.pyplot as plt 
+from contextlib import asynccontextmanager
+
+from utils.io import load_model
+from utils.graph_constructor import smiles_to_graph 
 from pathlib import Path
+from torch_geometric.data import Batch
+from pipeline.graph_explainer import ModelExplainer 
+from utils.molecule_visuzlizer import visualize_2d_quantitative_svg
+from io import StringIO
+
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, StreamingResponse
+import uvicorn
+
+ml_model = {} 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    model_path = Path("trained_model", "trained_model.pth")
+
+    if not model_path.exists(): 
+        raise FileNotFoundError(
+            f"CRITICAL: Trained model not found at {model_path.resolve()}. "
+            "Please ensure the model file is present before starting the server."
+        )
+    
+    model = load_model(model_path) 
+
+    model.eval() 
+
+    ml_model['model'] = model 
+
+    yield 
 
 
-if __name__ == '__main__': 
+app = FastAPI(lifespan = lifespan)
 
-  train_loader, validation_loader = get_train_test_loaders(batch_size = 1024, train_frac= 0.8) 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-  model = TrainClassifier(train_loader,
-                          validation_loader,
-                          model_hidden_dim=64,
-                          learning_rate= 0.0001,
-                          pos_weight=get_pos_wieghts(), 
-                          model_dropout= 0.5) 
 
-  print("Training model...")  
-  # implement early stopping:
-  train_loss, validation_loss = model.train_model(epochs = 75) 
+@app.get("/")
+def serveRoot():
 
-  print("Model training complete, preparing classification report...")
-  print(model.score_model()) 
+    html_path = Path("static", "index.html")
 
-  save_dir = "./trained_model" 
+    if not Path(html_path).exists():
+        return HTTPException(
+            status_code=404, detail="Frontend index.html file not found"
+        )
 
-  # model.save_model(save_dir)
-  save_model(model.classifier, save_dir)
+    return FileResponse(html_path)
 
-  print(f"model saved to: {save_dir}")
 
-  print("saving loss plot") 
+@app.post("/predict")
+async def predict_permeability(user_smiles_str: str):
 
-  plt.plot(range(len(train_loss)), train_loss, label = 'train loss') 
-  plt.plot(range(len(validation_loss)), validation_loss, label = 'validation loss') 
-  plt.legend()
-  plt.grid(True)
-  plt.xlabel("Epochs") 
-  plt.ylabel("Loss values")
-  plt.savefig(Path(save_dir, "training_plot.png"), dpi = 300)
+    graph = smiles_to_graph(user_smiles_str, None) 
 
-  print(f"plot saved to: {save_dir}")
+    if graph is None: 
+        return HTTPException(
+            status_code= 300, 
+            detail = f"Failed to convert smiles to graph: {user_smiles_str}"
+        )
+    
+    model = ml_model['model'] 
+
+    graph = Batch.from_data_list([graph])
+
+    prediction = model.predict(
+        graph.x, 
+        graph.edge_index, 
+        graph.edge_attr,
+        graph.batch
+    )
+
+    probability = model.predict_probs(
+        graph.x, 
+        graph.edge_index, 
+        graph.edge_attr, 
+        graph.batch
+    )
+
+    return {'permeable': bool(prediction==1.0), 'probability': float(probability)}
+
+
+@app.get("/explain")
+def explain_prediction(user_smiles_str: str):
+
+    graph = smiles_to_graph(user_smiles_str, None) 
+
+    if graph is None: 
+        raise HTTPException(
+            status_code= 300, 
+            detail = f"Failed to convert smiles to graph: {user_smiles_str}"
+        )
+
+    graph = Batch.from_data_list([graph])
+
+    model = ml_model['model'] 
+
+    graph_explainer = ModelExplainer(model) 
+
+    node_scores, edge_scores = graph_explainer.explain_graph(graph)
+
+    explaination_figure = visualize_2d_quantitative_svg(user_smiles_str, node_scores)
+
+    response_buffer = StringIO(explaination_figure) 
+    response_buffer.seek(0) 
+
+    return StreamingResponse(response_buffer, media_type= "image/svg+xml")
+
+
+if __name__ == "__main__":
+
+    uvicorn.run("main:app", 
+                host="localhost", 
+                port=8080,
+                reload = True)
