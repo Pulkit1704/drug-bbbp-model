@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBB Permeability Predictor (GNN)</title>
+    <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+    <link rel="stylesheet" href="static/index.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Blood-Brain Barrier Permeability Predictor</h1>
+        <p class="subtitle">GNN Inference & Atom/Bond Importance Explainer</p>
+    </header>
+
+    <!-- Input Card -->
+    <div class="card">
+        <div class="input-group">
+            <input type="text" id="smilesInput" placeholder="Enter SMILES string (e.g., c1ccccc1CC(=O)N)" value="c1ccccc1">
+            <button id="submitBtn" onclick="runPipeline()">Analyze Molecule</button>
+        </div>
+        <div id="mainLoading" class="loading-spinner"></div>
+    </div>
+
+    <!-- Results Workspace -->
+    <div class="dashboard">
+        
+        <!-- Left Side: Metrics & 2D Structure -->
+        <div class="dashboard-left">
+            <div class="card" style="flex: 1;">
+                <h3>Prediction Output</h3>
+                <div id="predictionResult">
+                    <p class="placeholder-text">Submit a SMILES string to calculate permeability.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>2D Molecular Structure</h3>
+                <div class="molecule-viewer">
+                    <div id="molPlaceholder" class="placeholder-text">Structure will render here</div>
+                    <canvas id="molCanvas" width="300" height="250" style="display:none;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: GNN Explainer Plot -->
+        <div class="card">
+            <h3>GNN Explainer (Substellar/Atom Importance)</h3>
+            <div class="explainer-container">
+                <div id="explainPlaceholder" class="placeholder-text">GNN Explainer visualization will render here</div>
+                <img id="explainerImg" class="explainer-img" src="" alt="GNN Explanation Plot">
+                <div id="explainerLegend" style="display: none; width: 90%; margin-top: 1rem; font-family: sans-serif;">
+                <p style="font-size: 0.85rem; color: #4a5568; margin-bottom: 6px; font-weight: 600; text-align: center;">
+                    GNN Explainer Atom Importance
+                </p>
+                <div style="
+                    height: 12px; 
+                    width: 100%; 
+                    border-radius: 6px; 
+                    background: linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(191, 194, 199) 50%, rgb(0, 0, 255) 100%);
+                    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+                "></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #718096; margin-top: 5px; font-weight: 500;">
+                    <span>0.0 (Low Impact)</span>
+                    <span>0.5 (Neutral Grey)</span>
+                    <span>1.0 (High Contribution)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript", src="/static/index.js"></script>
+
+</body>
+</html>
