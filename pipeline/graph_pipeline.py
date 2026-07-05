@@ -3,6 +3,7 @@ from utils.graph_constructor import smiles_to_graph, scaffold_split
 from utils.io import load_csv_files
 from torch_geometric.loader import DataLoader
 import pandas as pd
+import torch 
 
 
 def construct_graphs(data_frame: pd.DataFrame):
@@ -20,11 +21,13 @@ def construct_graphs(data_frame: pd.DataFrame):
         smiles_string = data_frame["smiles"].iloc[i]
         target_label = data_frame["label"].iloc[i]
 
-        graph = smiles_to_graph(smiles_string, target_label)
+        graph = smiles_to_graph(smiles_string)
 
         if graph is None:
             print(f"smiles conversion error, skipping string {smiles_string}")
             continue
+            
+        graph.y = torch.tensor([target_label], dtype = torch.float)
 
         graphs.append(graph)
 
