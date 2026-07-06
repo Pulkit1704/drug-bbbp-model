@@ -12,7 +12,11 @@ COPY requirements.prod.txt .
 RUN micromamba install -y --name base --file conda-lock.yml 
 
 ENV PATH="/opt/conda/bin:$PATH"
-RUN pip install --no-cache-dir -r requirements.prod.txt
+
+RUN pip install --no-cache-dir \
+    --trusted-host download.pytorch.org \
+    --trusted-host download-r2.pytorch.org \
+    -r requirements.prod.txt
 
 
 RUN micromamba clean --all --yes && \
