@@ -21,14 +21,17 @@ RUN micromamba clean --all --yes && \
 
 FROM mambaorg/micromamba:1.5-bullseye-slim AS runner
 
+USER root
 WORKDIR /app
 
 COPY --from=builder /opt/conda /opt/conda
 
-COPY ./app /app
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./app /app
 
-EXPOSE 8000
+EXPOSE 7860
 
 ENV PATH="/opt/conda/bin:$PATH"
+
+USER $MAMBA_USER
 
 CMD ["python", "main.py"]
