@@ -60,7 +60,7 @@ python main.py
 weighted avg       0.83      0.83      0.83      1937
 ```
 ## **Loss plot** 
-![Loss validation plot](./trained_model/training_plot.png)
+![Loss validation plot](./app/trained_model/training_plot.png)
 
 ## 📁 Highlights
 * `model/`: The GNN model.
