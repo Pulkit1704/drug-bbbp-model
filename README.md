@@ -1,3 +1,11 @@
+---
+title: GNN BBBP Classifier
+emoji: 🧬
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+---
 # Drug Blood-Brain Barrier Penetration (BBBP) Prediction
 **A Graph Neural Network (GNN) approach to predict blood brain barrier permeability of small molecules.**
 
