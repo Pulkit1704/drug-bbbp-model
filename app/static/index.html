@@ -18,7 +18,7 @@
     <!-- Input Card -->
     <div class="card">
         <div class="input-group">
-            <input type="text" id="smilesInput" placeholder="Enter SMILES string (e.g., c1ccccc1CC(=O)N)" value="c1ccccc1">
+            <input type="text" id="smilesInput" placeholder="Enter SMILES string (e.g., c1ccccc1CC(=O)N)" value="Oc1c(I)cc(Cl)c2cccnc12">
             <button id="submitBtn" onclick="runPipeline()">Analyze Molecule</button>
         </div>
         <div id="mainLoading" class="loading-spinner"></div>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <!-- Right Side: GNN Explainer Plot -->
+        <!-- GNN Explainer Plot -->
         <div class="card">
             <h3>GNN Explainer (Substellar/Atom Importance)</h3>
             <div class="explainer-container">
