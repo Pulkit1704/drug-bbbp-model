@@ -3,6 +3,8 @@ name: gnn-fastapi-prod
 channels:
   - conda-forge
   - defaults
+pip-repositories:
+  - https://download.pytorch.org/whl/cpu
 dependencies:
   - python=3.12
   - fastapi
@@ -13,3 +15,12 @@ dependencies:
   - scipy
   - pandas
   - numpy
+  - pip:
+    # - --extra-index-url https://download.pytorch.org/whl/cpu
+    - torch==2.10.0
+    - torch-geometric==2.7.0
+    - datamol
+    - selfies
+    - py3dmol
+    - tqdm
+    - loguru

@@ -7,15 +7,10 @@ USER root
 WORKDIR /build
 
 COPY conda-lock.yml .
-COPY requirements.prod.txt .
 
 RUN micromamba install -y --name base --file conda-lock.yml 
 
 ENV PATH="/opt/conda/bin:$PATH"
-
-RUN pip install --no-cache-dir \
-    --no-use-pep658 \
-    -r requirements.prod.txt
 
 RUN micromamba clean --all --yes && \
     find /opt/conda -type d -name "__pycache__" -exec rm -rf {} +
