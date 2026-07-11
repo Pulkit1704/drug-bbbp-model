@@ -9,6 +9,43 @@ app_port: 7860
 # Drug Blood-Brain Barrier Penetration (BBBP) Prediction
 **A Graph Neural Network (GNN) approach to predict blood brain barrier permeability of small molecules.**
 
+## 🌐 Live Deployment
+The model is containerized and deployed as an interactive web application. You can access the live app here:
+🚀 **[Hugging Face Spaces](https://huggingface.co/spaces/Pulkit1704/GNN-BBBP-Classifier)**
+
+## ⚡ Quick Start
+### Option 1 (building and running the docker container)
+
+Ensure you have Docker installed, then execute the following commands to pull, build, and run the application locally:
+
+```bash
+# Clone the github repository
+git clone https://github.com/Pulkit1704/drug-blood-brain-barrier-prediction-model.git
+
+cd drug-blood-brain-barrier-prediction-model
+
+# Build the Docker image
+docker build -f Dockerfile -t gnn-bbbp-app .
+
+# Run the container
+docker run -p 7860:7860 gnn-bbbp-app
+```
+
+### Option 2 (running source script)
+
+```bash
+# Clone the github repository 
+git clone https://github.com/Pulkit1704/drug-blood-brain-barrier-prediction-model.git
+
+cd drug-blood-brain-barrier-prediction-model
+
+# Create the conda environment 
+conda env create -f environment.yml
+
+# Run main.py to load data and train the model  
+python main.py 
+```
+
 ## 🚀 The Challenge
 Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is an important aspect of drug testing to ensure patient safety. This project implements an end-to-end graph featurization and classification pipeline using Graph Isomorphism Network with Edge features (GINE) network to automate this prediction.
 
@@ -20,30 +57,6 @@ Predicting whether a molecule can cross the Blood-Brain Barrier (BBB) is an impo
 * **Splitting**: Used Murcko Scaffold Splitting. The model should be able to generalize to new scaffolds that it has not seen during training.
 
 * **Featurization**: custom RDKit pipeline for building node (atoms) and edge (bonds) features from SMILES strings
-
-## Quick Start 
-1. Clone the github repository 
-
-
-```
-git clone https://github.com/Pulkit1704/drug-blood-brain-barrier-prediction-model.git
-cd drug-blood-brain-barrier-prediction-model
-
-```
-
-2. Create the conda environment 
-
-
-```
-conda env create -f environment.yml
-```
-
-3. Run main.py to load data and train the model 
-
-
-``` 
-python main.py 
-```
 
 ## 📊 Performance
 * **F1-score (macro average):** 0.81
