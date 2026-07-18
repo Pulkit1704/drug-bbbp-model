@@ -1,0 +1,11 @@
+services: 
+  web: 
+    build: 
+      context: .
+      dockerfile: Dockerfile 
+
+    image: gnn-bbp-fastapi:latest
+
+    container_name: gnn-bbp-fastapi
+    ports: 
+      - "8000:7860"
