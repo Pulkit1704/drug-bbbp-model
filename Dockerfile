@@ -16,6 +16,7 @@ RUN micromamba clean --all --yes && \
     find /opt/conda -type d -name "__pycache__" -exec rm -rf {} +
 
 
+# Running enviornment 
 FROM mambaorg/micromamba:1.5-bullseye-slim AS runner
 
 USER root

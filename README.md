@@ -24,11 +24,8 @@ git clone https://github.com/Pulkit1704/drug-blood-brain-barrier-prediction-mode
 
 cd drug-blood-brain-barrier-prediction-model
 
-# Build the Docker image
-docker build -f Dockerfile -t gnn-bbbp-app .
-
-# Run the container
-docker run -p 7860:7860 gnn-bbbp-app
+# run docker compose to build and attach to the container
+docker compose up --build
 ```
 
 ### Option 2 (running source script)

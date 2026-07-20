@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile 
 
-    image: gnn-bbp-fastapi:latest
+    image: pulkit3379/gnn-fastapi-app:latest
 
-    container_name: gnn-bbp-fastapi
+    container_name: gnn-fastapi-app
     ports: 
       - "8000:7860"
